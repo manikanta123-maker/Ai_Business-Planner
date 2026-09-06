@@ -8,6 +8,7 @@ import {
   Send, Bot, User, CheckCircle2, ChevronRight, Download, FileText,
   AlertTriangle, Milestone, ShieldCheck, HeartHandshake, TrendingUp, Users, Target
 } from "lucide-react";
+import { API_BASE_URL } from "@/lib/config";
 
 interface Blueprint {
   overview?: string;
@@ -75,7 +76,7 @@ export default function ProjectWorkspacePage() {
     const loadWorkspace = async () => {
       try {
         // 1. Fetch Project Details
-        const projResp = await fetch(`http://localhost:8000/api/v1/projects/${projectId}`, {
+        const projResp = await fetch(`${API_BASE_URL}/api/v1/projects/${projectId}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         if (!projResp.ok) throw new Error("Could not find project workspace.");
@@ -84,7 +85,7 @@ export default function ProjectWorkspacePage() {
 
         // 2. If status is completed, load existing blueprint
         if (projData.status === "completed") {
-          const blueprintResp = await fetch(`http://localhost:8000/api/v1/projects/${projectId}/blueprint`, {
+          const blueprintResp = await fetch(`${API_BASE_URL}/api/v1/projects/${projectId}/blueprint`, {
             headers: { Authorization: `Bearer ${token}` }
           });
           if (blueprintResp.ok) {
@@ -94,7 +95,7 @@ export default function ProjectWorkspacePage() {
         }
 
         // 3. Load Chat History
-        const chatResp = await fetch(`http://localhost:8000/api/v1/projects/${projectId}/chat/history`, {
+        const chatResp = await fetch(`${API_BASE_URL}/api/v1/projects/${projectId}/chat/history`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         if (chatResp.ok) {
@@ -125,7 +126,7 @@ export default function ProjectWorkspacePage() {
     
     // Create EventSource connection to read generation stream in real time
     const eventSource = new EventSource(
-      `http://localhost:8000/api/v1/projects/${projectId}/blueprint/generate/stream?token=${token}`
+      `${API_BASE_URL}/api/v1/projects/${projectId}/blueprint/generate/stream?token=${token}`
     );
 
     let activeStepIndex = 0;
@@ -161,7 +162,7 @@ export default function ProjectWorkspacePage() {
         // Reload project blueprint details
         const fetchBlueprint = async () => {
           try {
-            const response = await fetch(`http://localhost:8000/api/v1/projects/${projectId}/blueprint`, {
+            const response = await fetch(`${API_BASE_URL}/api/v1/projects/${projectId}/blueprint`, {
               headers: { Authorization: `Bearer ${token}` }
             });
             if (response.ok) {
@@ -202,7 +203,7 @@ export default function ProjectWorkspacePage() {
     const token = localStorage.getItem("access_token");
 
     try {
-      const response = await fetch(`http://localhost:8000/api/v1/projects/${projectId}/chat`, {
+      const response = await fetch(`${API_BASE_URL}/api/v1/projects/${projectId}/chat`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

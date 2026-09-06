@@ -17,7 +17,7 @@ if not exist "frontend\node_modules" (
 
 :: Start FastAPI Backend
 echo [1/3] Starting FastAPI Backend on port 8000...
-start "AI Business Backend" cmd /k "cd /d \"%~dp0backend\" && .\.venv\Scripts\python.exe -m uvicorn app.main:app --reload --port 8000"
+start "AI Business Backend" cmd /k "cd /d \"%~dp0backend\" && .\.venv\Scripts\python.exe -m uvicorn app.main:app --host 0.0.0.0 --reload --port 8000"
 
 :: Start Next.js Frontend
 echo [2/3] Starting Next.js Frontend on port 3000...

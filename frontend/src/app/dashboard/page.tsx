@@ -7,6 +7,7 @@ import {
   Plus, Compass, LogOut, Trash2, Edit3, Search, Folder, 
   Clock, Loader2, AlertCircle, Sparkles, X, ChevronRight 
 } from "lucide-react";
+import { API_BASE_URL } from "@/lib/config";
 
 interface Project {
   id: number;
@@ -47,7 +48,7 @@ export default function DashboardPage() {
     const fetchData = async () => {
       try {
         // Fetch user info
-        const userResp = await fetch("http://localhost:8000/api/v1/auth/me", {
+        const userResp = await fetch(`${API_BASE_URL}/api/v1/auth/me`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         if (userResp.status === 401) {
@@ -60,7 +61,7 @@ export default function DashboardPage() {
         }
 
         // Fetch projects
-        const projResp = await fetch("http://localhost:8000/api/v1/projects", {
+        const projResp = await fetch(`${API_BASE_URL}/api/v1/projects`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         if (projResp.ok) {
@@ -94,7 +95,7 @@ export default function DashboardPage() {
     const token = localStorage.getItem("access_token");
 
     try {
-      const response = await fetch("http://localhost:8000/api/v1/projects", {
+      const response = await fetch(`${API_BASE_URL}/api/v1/projects`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -128,7 +129,7 @@ export default function DashboardPage() {
     
     const token = localStorage.getItem("access_token");
     try {
-      const response = await fetch(`http://localhost:8000/api/v1/projects/${projectId}`, {
+      const response = await fetch(`${API_BASE_URL}/api/v1/projects/${projectId}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -149,7 +150,7 @@ export default function DashboardPage() {
     const token = localStorage.getItem("access_token");
 
     try {
-      const response = await fetch(`http://localhost:8000/api/v1/projects/${editingProject.id}`, {
+      const response = await fetch(`${API_BASE_URL}/api/v1/projects/${editingProject.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

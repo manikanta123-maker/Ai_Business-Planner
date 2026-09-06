@@ -1,16 +1,38 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Compass, Mail, Lock, Loader2, AlertCircle } from "lucide-react";
+import { Compass, Mail, Lock, Loader2, AlertCircle, Eye, EyeOff, Sparkles } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const emailParam = params.get("email");
+      if (emailParam) {
+        setEmail(emailParam);
+      }
+    }
+  }, []);
+
+  const getApiUrl = (endpoint: string) => {
+    const base = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+    return `${base}${endpoint}`;
+  };
+
+  const fillDemoCredentials = () => {
+    setEmail("demo@example.com");
+    setPassword("Password@123");
+    setError(null);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -18,16 +40,16 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:8000/api/v1/auth/login", {
+      const response = await fetch(getApiUrl("/api/v1/auth/login"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email: email.trim(), password }),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.detail || "Invalid email or password.");
+        throw new Error(data.detail || "Incorrect email or password. Please verify your credentials.");
       }
 
       // Store tokens
@@ -37,7 +59,7 @@ export default function LoginPage() {
       // Redirect to dashboard
       router.push("/dashboard");
     } catch (err: any) {
-      setError(err.message || "Something went wrong. Please try again.");
+      setError(err.message || "Failed to connect to backend server. Make sure the API is online.");
     } finally {
       setLoading(false);
     }
@@ -60,9 +82,19 @@ export default function LoginPage() {
         </div>
 
         {error && (
-          <div className="mb-6 p-4 rounded-xl border border-red-500/20 bg-red-500/5 text-red-400 text-sm flex items-start gap-3">
-            <AlertCircle className="h-5 w-5 shrink-0 mt-0.5" />
-            <span>{error}</span>
+          <div className="mb-6 p-4 rounded-xl border border-red-500/20 bg-red-500/10 text-red-300 text-sm flex items-start gap-3 animate-fade-in">
+            <AlertCircle className="h-5 w-5 shrink-0 mt-0.5 text-red-400" />
+            <div className="space-y-1">
+              <span>{error}</span>
+              {error.includes("Incorrect") && (
+                <div className="text-xs text-zinc-400 pt-1">
+                  Don't have an account yet?{" "}
+                  <Link href="/register" className="text-indigo-400 hover:underline font-semibold">
+                    Click here to register
+                  </Link>
+                </div>
+              )}
+            </div>
           </div>
         )}
 
@@ -77,7 +109,7 @@ export default function LoginPage() {
                 id="email"
                 type="email"
                 required
-                className="w-full h-11 bg-zinc-950 border border-zinc-850 rounded-xl pl-10 pr-4 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/30 transition-all outline-none"
+                className="w-full h-11 bg-zinc-950 border border-zinc-800 rounded-xl pl-10 pr-4 text-sm text-zinc-100 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/30 transition-all outline-none"
                 placeholder="you@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -90,14 +122,22 @@ export default function LoginPage() {
               <label className="text-xs font-semibold text-zinc-400 block" htmlFor="password">
                 Password
               </label>
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="text-xs text-zinc-500 hover:text-indigo-400 flex items-center gap-1 transition-colors"
+              >
+                {showPassword ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+                {showPassword ? "Hide" : "Show"}
+              </button>
             </div>
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
               <input
                 id="password"
-                type="password"
+                type={showPassword ? "text" : "password"}
                 required
-                className="w-full h-11 bg-zinc-950 border border-zinc-850 rounded-xl pl-10 pr-4 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/30 transition-all outline-none"
+                className="w-full h-11 bg-zinc-950 border border-zinc-800 rounded-xl pl-10 pr-4 text-sm text-zinc-100 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/30 transition-all outline-none"
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -105,10 +145,22 @@ export default function LoginPage() {
             </div>
           </div>
 
+          {/* Demo Login Shortcut */}
+          <div className="flex items-center justify-between pt-1">
+            <button
+              type="button"
+              onClick={fillDemoCredentials}
+              className="text-xs text-indigo-400 hover:text-indigo-300 flex items-center gap-1.5 transition-colors font-medium"
+            >
+              <Sparkles className="h-3.5 w-3.5" />
+              <span>Use Demo Credentials (demo@example.com)</span>
+            </button>
+          </div>
+
           <button
             type="submit"
             disabled={loading}
-            className="w-full h-11 rounded-xl bg-indigo-600 hover:bg-indigo-505 font-semibold text-white transition-all flex items-center justify-center gap-2 shadow-lg shadow-indigo-600/20 disabled:opacity-50 hover:scale-[1.02] active:scale-[0.98]"
+            className="w-full h-11 rounded-xl bg-indigo-600 hover:bg-indigo-500 font-semibold text-white transition-all flex items-center justify-center gap-2 shadow-lg shadow-indigo-600/20 disabled:opacity-50 hover:scale-[1.02] active:scale-[0.98]"
           >
             {loading ? (
               <>
