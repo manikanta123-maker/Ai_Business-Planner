@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, BarChart3, Shield, Users, LineChart, Globe, Zap, Compass } from "lucide-react";
+import { ArrowRight, BarChart3, Shield, Users, LineChart, Globe, Zap, Compass, Sparkles } from "lucide-react";
 
 export default function LandingPage() {
   return (
@@ -29,7 +29,14 @@ export default function LandingPage() {
             <a href="#value" className="hover:text-zinc-200 transition-colors">Success Criteria</a>
           </nav>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
+            <Link 
+              href="/projects/demo" 
+              className="hidden sm:flex text-xs font-semibold px-3 py-1.5 rounded-lg border border-indigo-500/30 bg-indigo-500/10 text-indigo-300 hover:bg-indigo-500/20 transition-all items-center gap-1.5"
+            >
+              <Sparkles className="h-3.5 w-3.5 text-indigo-400" />
+              <span>Live Demo</span>
+            </Link>
             <Link 
               href="/login" 
               className="text-sm font-semibold text-zinc-300 hover:text-white transition-colors"
@@ -66,18 +73,19 @@ export default function LandingPage() {
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <Link
+            href="/projects/demo"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-indigo-500 to-violet-600 px-8 py-4 text-base font-semibold text-white hover:from-indigo-400 hover:to-violet-500 transition-all hover:scale-105 active:scale-95 shadow-lg shadow-indigo-600/25"
+          >
+            <Sparkles className="h-5 w-5" />
+            <span>⚡ Explore Live Interactive Demo</span>
+          </Link>
+          <Link
             href="/register"
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-8 py-4 text-base font-semibold text-white hover:bg-indigo-500 transition-all hover:scale-105 active:scale-95 shadow-lg shadow-indigo-600/20"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl border border-zinc-800 bg-zinc-900/60 px-8 py-4 text-base font-semibold text-zinc-200 hover:bg-zinc-900 hover:text-white transition-all hover:border-zinc-700"
           >
             Create Your Free Account
             <ArrowRight className="h-4 w-4" />
           </Link>
-          <a
-            href="#features"
-            className="w-full sm:w-auto inline-flex items-center justify-center rounded-xl border border-zinc-800 bg-zinc-900/50 px-8 py-4 text-base font-semibold text-zinc-300 hover:bg-zinc-900 hover:text-white transition-all hover:border-zinc-700"
-          >
-            Explore Features
-          </a>
         </div>
 
         {/* Mockup Preview Area */}

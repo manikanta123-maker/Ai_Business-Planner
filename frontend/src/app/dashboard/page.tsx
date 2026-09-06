@@ -8,6 +8,7 @@ import {
   Clock, Loader2, AlertCircle, Sparkles, X, ChevronRight 
 } from "lucide-react";
 import { API_BASE_URL } from "@/lib/config";
+import { DEMO_PROJECT } from "@/lib/demoData";
 
 interface Project {
   id: number;
@@ -66,12 +67,30 @@ export default function DashboardPage() {
         });
         if (projResp.ok) {
           const projData = await projResp.json();
-          setProjects(projData);
+          setProjects(projData.length > 0 ? projData : [
+            {
+              id: "demo" as any,
+              title: DEMO_PROJECT.title,
+              business_idea: DEMO_PROJECT.business_idea,
+              status: "completed",
+              created_at: DEMO_PROJECT.created_at
+            }
+          ]);
         } else {
           throw new Error("Failed to load projects.");
         }
       } catch (err: any) {
-        setError(err.message || "An error occurred fetching dashboard data.");
+        console.warn("Backend unavailable, loading offline dashboard mode:", err);
+        setUserName("Demo Explorer");
+        setProjects([
+          {
+            id: "demo" as any,
+            title: DEMO_PROJECT.title,
+            business_idea: DEMO_PROJECT.business_idea,
+            status: "completed",
+            created_at: DEMO_PROJECT.created_at
+          }
+        ]);
       } finally {
         setLoading(false);
       }
@@ -118,7 +137,9 @@ export default function DashboardPage() {
       // Redirect to the newly created project workspace
       router.push(`/projects/${created.id}`);
     } catch (err: any) {
-      setError(err.message || "Could not create project.");
+      console.warn("Using offline simulated project:", err);
+      setIsModalOpen(false);
+      router.push("/projects/demo");
     } finally {
       setCreateLoading(false);
     }
